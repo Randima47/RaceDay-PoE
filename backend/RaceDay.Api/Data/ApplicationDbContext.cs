@@ -25,12 +25,12 @@ namespace RaceDay.Api.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Sets decimal precision for event distance (e.g. 999.99 KM)
+            // Sets decimal precision for event distance 
             modelBuilder.Entity<EventCategory>()
                 .Property(c => c.DistanceKM)
                 .HasColumnType("decimal(5, 2)");
 
-            // Sets decimal precision for entry fees (e.g. 99,999,999.99)
+            // Sets decimal precision for entry fees 
             modelBuilder.Entity<EventCategory>()
                 .Property(c => c.EntryFee)
                 .HasColumnType("decimal(10, 2)");
