@@ -20,7 +20,7 @@ namespace RaceDay.Api.Data
         public DbSet<Enrolment> Enrolments { get; set; } = null!;
         public DbSet<Result> Results { get; set; } = null!;
 
-        // Configures table column precision and relationships using Fluent API
+        // Configures table column precision and relationship using Fluent API
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
