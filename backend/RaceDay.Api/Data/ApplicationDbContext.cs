@@ -3,7 +3,7 @@ using RaceDay.Api.Models;
 
 namespace RaceDay.Api.Data
 {
-    // Application database context managing entity connections and table mappings
+    // Application database context managing entity connection and table mappings
     public class ApplicationDbContext : DbContext
     {
         // Initializes context with configured database options
