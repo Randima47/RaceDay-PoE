@@ -48,7 +48,7 @@ cd backend/RaceDay.Api
 dotnet restore
 ```
 
-### 4. Build the Solution
+### 4. Build the Solution 
 
 ```bash
 dotnet build
