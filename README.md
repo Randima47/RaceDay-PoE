@@ -29,7 +29,7 @@ Make sure the following tools are installed in your environment before running t
 
 ## Local Setup & Installation
 
-### 1. Clone the Repository
+### 1. Clone the Repository 
 
 ```bash
 git clone <your-repository-url>
