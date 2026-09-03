@@ -19,7 +19,7 @@ RaceDay API is an ASP.NET Core RESTful Web API designed to manage race event ope
 
 ## Prerequisites
 
-Ensure the following tools are installed in your environment before running the project:
+Make sure the following tools are installed in your environment before running the project:
 
 * [.NET SDK](https://dotnet.microsoft.com/download) - Version 8.0 or higher
 * [SQL Server](https://www.microsoft.com/sql-server) or SQL Server Express / LocalDB
