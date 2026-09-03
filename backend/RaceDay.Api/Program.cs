@@ -30,6 +30,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 // RaceDay Web API - Part 1 Complete
-// More coming really soon in Part 2
+// More coming soon in Part 2
 
 app.Run();
