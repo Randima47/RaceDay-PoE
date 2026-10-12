@@ -17,11 +17,14 @@ namespace RaceDay.Api.Controllers
             _context = context;
         }
 
-        // GET: api/events (Accessible to both Organisers and Participants)
+        // GET: api/events
         [HttpGet]
         public async Task<IActionResult> GetAllEvents()
         {
-            var events = await _context.Events.ToListAsync();
+            var events = await _context.Events
+                .Include(e => e.Organiser)
+                .Include(e => e.Categories)
+                .ToListAsync();
             return Ok(events);
         }
 
@@ -29,7 +32,11 @@ namespace RaceDay.Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetEventById(int id)
         {
-            var raceEvent = await _context.Events.FindAsync(id);
+            var raceEvent = await _context.Events
+                .Include(e => e.Organiser)
+                .Include(e => e.Categories)
+                .FirstOrDefaultAsync(e => e.EventID == id);
+
             if (raceEvent == null)
             {
                 return NotFound(new { message = "Event not found." });
@@ -41,27 +48,31 @@ namespace RaceDay.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateEvent([FromBody] EventDto dto)
         {
-            // Simple Session Check for Organiser Role
             var userRole = HttpContext.Session.GetString("UserRole");
             if (userRole != "Organiser")
             {
                 return StatusCode(403, new { message = "Access denied. Only Organisers can create events." });
             }
 
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return Unauthorized(new { message = "User session not found. Please log in." });
+            }
+
             var newEvent = new Event
             {
-                Name = dto.Name,
+                Title = dto.Title,
                 Description = dto.Description,
-                Date = dto.Date,
+                EventDate = dto.EventDate,
                 Location = dto.Location,
-                DistanceKm = dto.DistanceKm,
-                EventType = dto.EventType
+                OrganiserID = userId.Value
             };
 
             _context.Events.Add(newEvent);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetEventById), new { id = newEvent.EventId }, newEvent);
+            return CreatedAtAction(nameof(GetEventById), new { id = newEvent.EventID }, newEvent);
         }
 
         // PUT: api/events/{id} (Organisers only)
@@ -80,12 +91,10 @@ namespace RaceDay.Api.Controllers
                 return NotFound(new { message = "Event not found." });
             }
 
-            raceEvent.Name = dto.Name;
+            raceEvent.Title = dto.Title;
             raceEvent.Description = dto.Description;
-            raceEvent.Date = dto.Date;
+            raceEvent.EventDate = dto.EventDate;
             raceEvent.Location = dto.Location;
-            raceEvent.DistanceKm = dto.DistanceKm;
-            raceEvent.EventType = dto.EventType;
 
             await _context.SaveChangesAsync();
             return Ok(new { message = "Event updated successfully.", raceEvent });
