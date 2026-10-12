@@ -8,6 +8,6 @@
         public DateTime Date { get; set; }
         public string Location { get; set; } = string.Empty;
         public decimal DistanceKm { get; set; }
-        public string EventType { get; set; } = string.Empty; // "Run", "Walk", or "Cycle"
+        public string EventType { get; set; } = string.Empty; 
     }
 }
