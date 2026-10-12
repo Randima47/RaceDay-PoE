@@ -61,7 +61,7 @@ namespace RaceDay.Api.Controllers
                 .Include(r => r.Enrolment)
                 .ThenInclude(e => e.Category)
                 .ThenInclude(c => c.Event)
-                .Where(r => r.Enrolment.UserID == userId.Value)
+                .Where(r => r.Enrolment.ParticipantID == userId.Value)
                 .ToListAsync();
 
             return Ok(results);
