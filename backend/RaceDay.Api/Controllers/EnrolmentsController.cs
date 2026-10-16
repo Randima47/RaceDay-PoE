@@ -68,11 +68,10 @@ namespace RaceDay.Api.Controllers
                 .Include(e => e.Participant)
                 .Include(e => e.Category)
                 .ThenInclude(c => c.Event)
-                .Where(e => e.Category.EventID == eventId)
+                .Where(e => e.Category != null && e.Category.EventID == eventId)
                 .ToListAsync();
 
             return Ok(enrolments);
         }
     }
 }
-
