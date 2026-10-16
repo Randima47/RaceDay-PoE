@@ -17,13 +17,13 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '10.0.x'
+        dotnet-version: '10.0.x' # Matches your SDK version
         
     - name: Restore dependencies
-      run: dotnet restore ./backend/*.sln
-      
+      run: dotnet restore backend/RaceDay-PoE.sln # Adjust to your solution name if needed
+
     - name: Build
-      run: dotnet build ./backend/*.sln --no-restore
-      
+      run: dotnet build backend/RaceDay-PoE.sln --no-restore
+
     - name: Run Tests
-      run: dotnet test ./backend/*.sln --no-build --verbosity normal
+      run: dotnet test backend/RaceDay-PoE.sln --no-build --verbosity normal
