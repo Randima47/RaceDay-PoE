@@ -1,7 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using RaceDay.Api.Data;
-using Swashbuckle.AspNetCore;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +12,15 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// REQUIRED: Add distributed memory cache and session services for authentication state
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -25,11 +32,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// REQUIRED: Enable session middleware BEFORE authorization
+app.UseSession();
+
 app.UseAuthorization();
-
 app.MapControllers();
-
-// RaceDay Web API - Part 1 Complete
-// More coming soon in Part 2
 
 app.Run();

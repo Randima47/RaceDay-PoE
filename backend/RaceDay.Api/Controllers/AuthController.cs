@@ -38,13 +38,13 @@ namespace RaceDay.Api.Controllers
             // 3. Hash the password securely (basic SHA256)
             string passwordHash = HashPassword(dto.Password);
 
-            // 4. Create the new user entity
+            // 4. Create the new user entity (use FullName instead of ParticipantID)
             var user = new User
             {
-                Username = dto.Username,
+                FullName = dto.Username,   
                 Email = dto.Email,
                 PasswordHash = passwordHash,
-                RoleId = role.RoleId
+                RoleID = role.RoleID
             };
 
             _context.Users.Add(user);
@@ -66,12 +66,12 @@ namespace RaceDay.Api.Controllers
                 return Unauthorized(new { message = "Invalid email or password." });
             }
 
-            // 2. Save user session data
+            // 2. Save user session data (using UserID)
             HttpContext.Session.SetString("UserEmail", user.Email);
             HttpContext.Session.SetString("UserRole", user.Role.RoleName);
-            HttpContext.Session.SetInt32("UserId", user.UserId);
+            HttpContext.Session.SetInt32("UserId", user.UserID);
 
-            return Ok(new { message = $"Welcome back, {user.Username}!", role = user.Role.RoleName });
+            return Ok(new { message = $"Welcome back, {user.FullName ?? user.Email}!", role = user.Role.RoleName });
         }
 
         [HttpPost("logout")]
