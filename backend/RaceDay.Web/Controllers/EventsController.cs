@@ -3,7 +3,7 @@ using RaceDay.Web.Services;
 
 namespace RaceDay.Web.Controllers
 {
-    public class EventsController : Controller
+    public class EventsController : Controller 
     {
         private readonly ApiService _apiService;
 
