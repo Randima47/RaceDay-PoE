@@ -1,5 +1,5 @@
 ﻿namespace RaceDay.Web.ViewModels
-{
+{ 
     public class EnrolmentPageViewModel
     {
         public int EventId { get; set; }
