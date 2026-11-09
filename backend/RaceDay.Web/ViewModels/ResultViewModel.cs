@@ -1,6 +1,6 @@
 ﻿namespace RaceDay.Web.ViewModels
 {
-    public class ResultViewModel
+    public class ResultViewModel 
     {
         public int Id { get; set; }
         public int EventId { get; set; }
