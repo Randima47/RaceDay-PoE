@@ -1,84 +1,107 @@
-# RaceDay API - Part 1 & Part 2
+# RaceDay Platform - Final PoE Solution (Parts 1, 2 & 3)
 
 ## Overview
 
-RaceDay API is an ASP.NET Core RESTful Web API designed to manage race event operations, user registrations, event categories, and competition results. This project serves as the backend service responsible for data persistence, schema modeling, and endpoint architecture for the RaceDay platform. 
-
-**Part 2 Continuation:** Expands upon the foundational architecture by introducing automated xUnit testing suites (`RaceDay.Tests`), expanded controller logic, and robust Entity Framework Core test integration.
-
-## Architecture & Tech Stack
-
-- **Framework:** ASP.NET Core Web API (.NET 8/9)
-- **ORM:** Entity Framework Core
-- **Database Engine:** SQL Server / LocalDB / EF Core In-Memory (for testing)
-- **Testing Framework:** xUnit (Part 2)
-- **Documentation:** OpenAPI / Swagger
-- **Repository Structure:**
-
-  * `/backend/RaceDay.Api` - Source code, models, database context, and schema artifacts.
-  * `/backend/RaceDay.Tests` - Automated xUnit test project for controller logic verification (Part 2).
-  * `/docs` - Architectural diagrams (ERD) and endpoint planning documentation.
+RaceDay is a full-stack ASP.NET Core web platform designed to streamline race event operations, participant enrolments, event category management, and competition result tracking. The repository contains both a RESTful Web API backend service (`RaceDay.Api`), an automated xUnit testing suite (`RaceDay.Tests`), and a responsive ASP.NET Core MVC web client (`RaceDay.Web`).
 
 ---
 
-## Prerequisites
+## Architecture & Tech Stack
 
-Ensure the following tools are installed in your environment before running the project:
+- **Framework:** ASP.NET Core (.NET 8.0 / 9.0)
+- **Architecture:** Decoupled Architecture (RESTful Web API + MVC Web Client)
+- **Database & ORM:** SQL Server / LocalDB managed via Entity Framework Core
+- **Testing Suite:** xUnit with EF Core In-Memory database provider
+- **Front-End:** ASP.NET Core MVC (Razor Views, Bootstrap 5, Custom CSS)
+- **Session & State Management:** Server-side In-Memory Session Cache (`ISession`)
+- **API Documentation:** Swagger / OpenAPI
 
-- [.NET SDK](https://dotnet.microsoft.com/download) - Version 8.0 or higher
+### Repository Structure
+
+RaceDay-PoE/
+├── backend/
+│   ├── RaceDay.Api/         
+│   └── RaceDay.Tests/        
+├── frontend/
+│   └── RaceDay.Web/          
+└── docs/                     
+---
+
+## Key Features & User Roles
+
+### 1. Account & Authentication
+- **Multi-Role Registration & Login:** Users register as either **Participant** or **Organiser**.
+- **Role-Based Authorization:** Organisers access dedicated event creation tools, while Participants access enrolment and race timing features.
+
+### 2. Organiser Dashboard
+- Create and manage race events with dates, locations, descriptions, and custom banner image URLs.
+- Define multiple race categories (e.g., 5km, 10km, 21km) with customizable entry fees.
+- Capture official finish positions, category ranks, and completion times for enrolled participants.
+
+### 3. Participant Experience
+- Browse upcoming race events with dynamic category pricing and details.
+- Self-enrol into specific event distance categories.
+- Access a personalized "My Results" dashboard tracking official finish times and overall/category ranks.
+
+---
+
+## System Requirements & Prerequisites
+
+Ensure the following tools are installed before running the solution:
+
+- [.NET 8.0 SDK](https://dotnet.microsoft.com/download) or higher
 - [SQL Server](https://www.microsoft.com/sql-server) or SQL Server Express / LocalDB
 - [Git](https://git-scm.com/)
 
 ---
 
-## Local Setup & Installation
+## Local Setup & Execution Guide
 
 ### 1. Clone the Repository
 
-```bash
 git clone <your-repository-url>
 cd RaceDay-PoE
-2. Navigate to the Backend Project
-Bash
+
+### 2. Database Migration Setup
+Navigate to the API directory and apply Entity Framework Core migrations to instantiate your local database:
+
 cd backend/RaceDay.Api
-3. Restore Dependencies
-Bash
-dotnet restore
-4. Build the Solution
-Bash
-dotnet build
-Database Configuration
-The application uses Entity Framework Core for Object-Relational Mapping (ORM).
+dotnet ef database update
 
-Fluent API: Model configurations, entity relationships, and column precisions, such as decimal definitions for fees and distances, are configured in ApplicationDbContext.cs.
+Running the Platform
+The backend Web API and frontend MVC web application run as two distinct local applications.
 
-Manual Schema Export: A standalone database initialization script is available at backend/RaceDay.Api/schema.sql for manual schema inspection and database creation.
+Option A: Running from Terminal (Two Windows)
+Terminal 1 — Backend Web API (RaceDay.Api):
 
-Execution & API Testing
-1. Run the Application
-Bash
+cd backend/RaceDay.Api
 dotnet run
-2. Access Swagger UI
-Once the application starts, navigate to the following URL in your web browser to test and inspect endpoints interactively:
 
-Plaintext
-https://localhost:<port>/swagger
-Replace <port> with the port displayed in the terminal when the application starts.
+Listens on http://localhost:5197 (Swagger accessible at http://localhost:5197/swagger).
 
-Part 2: Automated Testing Execution
-To run the automated unit testing suite introduced in Part 2:
+Terminal 2 — Frontend MVC Client (RaceDay.Web)
 
-Navigate to the root backend folder or RaceDay.Tests directory.
+cd frontend/RaceDay.Web
+dotnet run
 
-Execute the test runner command:
+Listens on https://localhost:7237 (or your assigned local SSL port).
+Option B: Running from Visual Studio
 
-Bash
+1. Open RaceDay.sln in Visual Studio.
+2. Right-click the Solution in Solution Explorer $\rightarrow$ Properties.
+3. Under Common Properties $\rightarrow$ Startup Project, choose Multiple startup projects.
+3. Set the action for both RaceDay.Api and RaceDay.Web to Start.
+4. Press F5 to build and run both projects simultaneously.
+
+Running Automated Unit Tests
+To execute the automated xUnit controller testing suite:
+
+cd backend/RaceDay.Tests
 dotnet test
-Project Artifacts
+Project Artifacts & Documentation
 Database Schema Script: backend/RaceDay.Api/schema.sql
-
-Automated Test Project: backend/RaceDay.Tests/ (Part 2)
 
 Entity Relationship Diagram (ERD): docs/ERD.png
 
-API Endpoint Plan: docs/API_Endpoint_Plan.md
+API Endpoint Specification: docs/API_Endpoint_Plan.md
+
