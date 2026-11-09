@@ -24,7 +24,25 @@ namespace RaceDay.Api.Controllers
             var events = await _context.Events
                 .Include(e => e.Organiser)
                 .Include(e => e.Categories)
+                .Select(e => new
+                {
+                    e.EventID,
+                    e.Title,
+                    e.Description,
+                    e.EventDate,
+                    e.Location,
+                    e.BannerUrl,
+                    OrganiserName = e.Organiser != null ? e.Organiser.FullName : "Unknown",
+                    Categories = e.Categories.Select(c => new
+                    {
+                        c.CategoryID,
+                        c.CategoryName,
+                        c.DistanceKM,
+                        c.EntryFee
+                    })
+                })
                 .ToListAsync();
+
             return Ok(events);
         }
 
@@ -35,12 +53,31 @@ namespace RaceDay.Api.Controllers
             var raceEvent = await _context.Events
                 .Include(e => e.Organiser)
                 .Include(e => e.Categories)
-                .FirstOrDefaultAsync(e => e.EventID == id);
+                .Where(e => e.EventID == id)
+                .Select(e => new
+                {
+                    e.EventID,
+                    e.Title,
+                    e.Description,
+                    e.EventDate,
+                    e.Location,
+                    e.BannerUrl,
+                    OrganiserName = e.Organiser != null ? e.Organiser.FullName : "Unknown",
+                    Categories = e.Categories.Select(c => new
+                    {
+                        c.CategoryID,
+                        c.CategoryName,
+                        c.DistanceKM,
+                        c.EntryFee
+                    })
+                })
+                .FirstOrDefaultAsync();
 
             if (raceEvent == null)
             {
                 return NotFound(new { message = "Event not found." });
             }
+
             return Ok(raceEvent);
         }
 
@@ -48,6 +85,11 @@ namespace RaceDay.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateEvent([FromBody] EventDto dto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var userRole = HttpContext.Session.GetString("UserRole");
             if (userRole != "Organiser")
             {
@@ -66,19 +108,25 @@ namespace RaceDay.Api.Controllers
                 Description = dto.Description,
                 EventDate = dto.EventDate,
                 Location = dto.Location,
+                BannerUrl = dto.BannerUrl, // Supports Azure Blob storage image URL string
                 OrganiserID = userId.Value
             };
 
             _context.Events.Add(newEvent);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetEventById), new { id = newEvent.EventID }, newEvent);
+            return CreatedAtAction(nameof(GetEventById), new { id = newEvent.EventID }, new { message = "Event created successfully.", newEvent });
         }
 
         // PUT: api/events/{id} (Organisers only)
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateEvent(int id, [FromBody] EventDto dto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var userRole = HttpContext.Session.GetString("UserRole");
             if (userRole != "Organiser")
             {
@@ -95,6 +143,10 @@ namespace RaceDay.Api.Controllers
             raceEvent.Description = dto.Description;
             raceEvent.EventDate = dto.EventDate;
             raceEvent.Location = dto.Location;
+            if (!string.IsNullOrEmpty(dto.BannerUrl))
+            {
+                raceEvent.BannerUrl = dto.BannerUrl;
+            }
 
             await _context.SaveChangesAsync();
             return Ok(new { message = "Event updated successfully.", raceEvent });

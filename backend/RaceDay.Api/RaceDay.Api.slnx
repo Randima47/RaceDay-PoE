@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="../RaceDay.Web/RaceDay.Web.csproj" Id="9870d2f0-5942-48b3-9808-55c8d873e1ac" />
   <Project Path="RaceDay.Api.csproj" />
 </Solution>

@@ -41,7 +41,7 @@ namespace RaceDay.Api.Controllers
             // 4. Create the new user entity (use FullName instead of ParticipantID)
             var user = new User
             {
-                FullName = dto.Username,   
+                FullName = dto.Username,
                 Email = dto.Email,
                 PasswordHash = passwordHash,
                 RoleID = role.RoleID
@@ -71,7 +71,13 @@ namespace RaceDay.Api.Controllers
             HttpContext.Session.SetString("UserRole", user.Role.RoleName);
             HttpContext.Session.SetInt32("UserId", user.UserID);
 
-            return Ok(new { message = $"Welcome back, {user.FullName ?? user.Email}!", role = user.Role.RoleName });
+            // 3. Return explicit properties matching the MVC session view model
+            return Ok(new
+            {
+                name = user.FullName ?? user.Email,
+                email = user.Email,
+                role = user.Role.RoleName
+            });
         }
 
         [HttpPost("logout")]

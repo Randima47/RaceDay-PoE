@@ -6,5 +6,6 @@
         public string? Description { get; set; }
         public DateTime EventDate { get; set; }
         public string Location { get; set; } = string.Empty;
+        public string? BannerUrl { get; set; }
     }
 }

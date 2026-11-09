@@ -10,6 +10,7 @@
         public string Location { get; set; } = string.Empty;
 
         public User? Organiser { get; set; }
+        public string? BannerUrl { get; set; }
         public List<EventCategory> Categories { get; set; } = new();
     }
 }

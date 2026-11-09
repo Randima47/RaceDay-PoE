@@ -21,6 +21,11 @@ namespace RaceDay.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> EnrolInEvent([FromBody] EnrolmentDto dto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var userRole = HttpContext.Session.GetString("UserRole");
             if (userRole != "Participant")
             {
@@ -33,11 +38,20 @@ namespace RaceDay.Api.Controllers
                 return Unauthorized(new { message = "Please log in first." });
             }
 
-            // Check if category exists
+            // Check if target category exists
             var category = await _context.EventCategories.FindAsync(dto.CategoryID);
             if (category == null)
             {
                 return NotFound(new { message = "Selected category not found." });
+            }
+
+            // Check if participant is already enrolled in this category
+            var alreadyEnrolled = await _context.Enrolments
+                .AnyAsync(e => e.ParticipantID == userId.Value && e.CategoryID == dto.CategoryID);
+
+            if (alreadyEnrolled)
+            {
+                return BadRequest(new { message = "You are already enrolled in this event category." });
             }
 
             var enrolment = new Enrolment
@@ -51,7 +65,7 @@ namespace RaceDay.Api.Controllers
             _context.Enrolments.Add(enrolment);
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Enrolled successfully!", enrolment });
+            return Ok(new { message = "Enrolled successfully!", enrolmentId = enrolment.EnrolmentID });
         }
 
         // GET: api/enrolments/event/{eventId} (Organisers view enrolments for their event)
@@ -67,8 +81,16 @@ namespace RaceDay.Api.Controllers
             var enrolments = await _context.Enrolments
                 .Include(e => e.Participant)
                 .Include(e => e.Category)
-                .ThenInclude(c => c.Event)
                 .Where(e => e.Category != null && e.Category.EventID == eventId)
+                .Select(e => new
+                {
+                    e.EnrolmentID,
+                    ParticipantName = e.Participant != null ? e.Participant.FullName : "N/A",
+                    ParticipantEmail = e.Participant != null ? e.Participant.Email : "N/A",
+                    CategoryName = e.Category != null ? e.Category.CategoryName : "N/A",
+                    e.EnrolmentDate,
+                    e.PaymentStatus
+                })
                 .ToListAsync();
 
             return Ok(enrolments);

@@ -1,0 +1,56 @@
+﻿@model IEnumerable<RaceDay.Web.ViewModels.ResultViewModel>
+
+@{
+    ViewData["Title"] = "My Race Results";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">My Race Results</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="card p-5 text-center shadow-sm border-0">
+            <h4 class="text-muted">No race results recorded yet.</h4>
+            <p class="text-secondary">Enrol in upcoming events to get your finish times tracked!</p>
+            <div>
+                <a asp-controller="Events" asp-action="Index" class="btn btn-primary mt-2">Browse Events</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle shadow-sm bg-white rounded">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Event</th>
+                        <th>Category</th>
+                        <th>Finish Time</th>
+                        <th class="text-center">Overall Position</th>
+                        <th class="text-center">Category Position</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var res in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold">@res.EventTitle</td>
+                            <td><span class="badge bg-info text-dark">@res.CategoryName</span></td>
+                            <td class="font-monospace">⏱️ @res.FinishTime</td>
+                            <td class="text-center"><span class="badge bg-secondary">#@res.OverallPosition</span></td>
+                            <td class="text-center"><span class="badge bg-primary">#@res.CategoryPosition</span></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

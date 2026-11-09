@@ -1,0 +1,35 @@
+﻿@model RaceDay.Web.ViewModels.EventViewModel
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<div class="container mt-4">
+    <div class="card shadow border-0">
+        @if (!string.IsNullOrEmpty(Model.BannerUrl))
+        {
+            <img src="@Model.BannerUrl" class="card-img-top" alt="@Model.Title" style="max-height: 350px; object-fit: cover;">
+        }
+        <div class="card-body p-4">
+            <h1 class="card-title text-primary font-weight-bold">@Model.Title</h1>
+            <hr />
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <p class="fs-5"><strong>Location:</strong> @Model.Location</p>
+                    <p class="fs-5"><strong>Date:</strong> @Model.EventDate.ToString("f")</p>
+                </div>
+            </div>
+
+            <h4 class="mt-4">About the Event</h4>
+            <p class="lead">@Model.Description</p>
+
+            <div class="mt-4">
+                @if (Context.Session.GetString("UserRole") == "Participant")
+                {
+                    <a asp-controller="Enrolments" asp-action="Create" asp-route-eventId="@Model.Id" class="btn btn-success btn-lg">Enrol Now</a>
+                }
+                <a asp-action="Index" class="btn btn-outline-secondary btn-lg ms-2">Back to Events</a>
+            </div>
+        </div>
+    </div>
+</div>

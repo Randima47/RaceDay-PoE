@@ -1,0 +1,59 @@
+﻿@model RaceDay.Web.ViewModels.EnrolmentPageViewModel
+
+@{
+    ViewData["Title"] = "Enrol in Race";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-primary text-white py-3">
+                <h4 class="mb-0">Race Enrolment - @(Model?.EventTitle ?? "Event")</h4>
+            </div>
+            <div class="card-body p-4">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger" asp-validation-summary="All"></div>
+                }
+
+                <form asp-controller="Enrolments" asp-action="Create" method="post">
+                    <input type="hidden" asp-for="EventId" />
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Select Race Category:</label>
+                        @if (Model?.Categories == null || !Model.Categories.Any())
+                        {
+                            <div class="alert alert-warning">
+                                No categories are currently available for this event. Please contact the organiser.
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="list-group">
+                                @foreach (var cat in Model.Categories)
+                                {
+                                    <label class="list-group-item list-group-item-action d-flex justify-content-between align-items-center cursor-pointer">
+                                        <div>
+                                            <input class="form-check-input me-2" type="radio" asp-for="SelectedCategoryId" value="@cat.CategoryName" required />
+                                            <span class="fw-bold">@cat.CategoryName</span>
+                                            <span class="text-muted ms-2">(@cat.DistanceKM km)</span>
+                                        </div>
+                                        <span class="badge bg-success rounded-pill fs-6">R @cat.EntryFee.ToString("N2")</span>
+                                    </label>
+                                }
+                            </div>
+                        }
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-controller="Events" asp-action="Details" asp-route-id="@Model?.EventId" class="btn btn-outline-secondary">Back to Event Details</a>
+                        @if (Model?.Categories != null && Model.Categories.Any())
+                        {
+                            <button type="submit" class="btn btn-success px-4">Confirm Enrolment</button>
+                        }
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

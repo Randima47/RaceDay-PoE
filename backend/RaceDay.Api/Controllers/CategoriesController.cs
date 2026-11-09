@@ -25,6 +25,11 @@ namespace RaceDay.Api.Controllers
                 .Where(c => c.EventID == eventId)
                 .ToListAsync();
 
+            if (categories == null || !categories.Any())
+            {
+                return NotFound(new { message = "No categories found for this event." });
+            }
+
             return Ok(categories);
         }
 
@@ -32,10 +37,22 @@ namespace RaceDay.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateCategory([FromBody] CategoryDto dto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var userRole = HttpContext.Session.GetString("UserRole");
             if (userRole != "Organiser")
             {
                 return StatusCode(403, new { message = "Access denied. Only Organisers can add categories." });
+            }
+
+            // Verify that the target event actually exists before adding a category
+            var eventExists = await _context.Events.AnyAsync(e => e.EventID == dto.EventID);
+            if (!eventExists)
+            {
+                return BadRequest(new { message = "Specified Event ID does not exist." });
             }
 
             var category = new EventCategory
